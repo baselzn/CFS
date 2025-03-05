@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/caadocapproval/db" VERSION="20250304" COMMENT="XMLDB file for CAA Document Approval module"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="caadocapproval" COMMENT="Main activity table for CAA Document Approval">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course ID"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Activity name"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Activity introduction"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <!-- CAA category and document type approvers -->
+        <FIELD NAME="approvers_course_specs_syllabus_l1" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Level 1 approvers for syllabus"/>
+        <FIELD NAME="approvers_course_specs_syllabus_l2" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Level 2 approvers for syllabus"/>
+        <FIELD NAME="approvers_course_specs_syllabus_l3" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Level 3 approvers for syllabus"/>
+        <!-- Add more approver fields for each document type -->
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+    
+    <TABLE NAME="caadocapproval_documents" COMMENT="Stores documents submitted for approval">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="caadocapproval" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="CAA activity ID"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course ID"/>
+        <FIELD NAME="category" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="CAA category"/>
+        <FIELD NAME="doc_type" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Document type"/>
+        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="filepath" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User who uploaded the document"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Document status"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="caadocapproval" TYPE="foreign" FIELDS="caadocapproval" REFTABLE="caadocapproval" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+    
+    <TABLE NAME="caadocapproval_approvals" COMMENT="Stores approval records">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="documentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Document ID"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Approver user ID"/>
+        <FIELD NAME="level" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="Approval level"/>
+        <FIELD NAME="timeapproved" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="comments" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Approval comments"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="documentid" TYPE="foreign" FIELDS="documentid" REFTABLE="caadocapproval_documents" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+    
+    <TABLE NAME="caadocapproval_rejections" COMMENT="Stores rejection records">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="documentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Document ID"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Reviewer user ID"/>
+        <FIELD NAME="timerejected" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="comments" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Rejection reason"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="documentid" TYPE="foreign" FIELDS="documentid" REFTABLE="caadocapproval_documents" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
